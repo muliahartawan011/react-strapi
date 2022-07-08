@@ -4,7 +4,7 @@ import {
   Flex,
   Heading,
   HStack,
- 
+  VStack,
   List,
   ListItem,
   Text,
@@ -15,13 +15,14 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { ArrowRight } from 'react-bootstrap-icons';
 import {Link} from 'react-router-dom'
+import {ReactComponent as NoContent} from '../../assets/no-content.svg'
 
 function ListBlogs() {
   const [posts, setPosts] = useState();
 
   useState(() => {
     axios
-      .get('http://localhost:1337/api/blogs')
+      .get('http://localhost:1337/api/blogs?populate[0]=author')
       .then(res => setPosts(res.data.data))
       .catch();
   });
@@ -49,12 +50,12 @@ function ListBlogs() {
             </Flex>
             <HStack justifyContent="space-between">
               <Text fontSize="xs" fontStyle="italic">
-                {moment(post.attributes.date).format('LL')}
+                {moment(post.attributes.createdAt).startOf('hour').fromNow()}
               </Text>
             </HStack>
 
             <Text noOfLines={3}>
-              {post.attributes.description}
+              {post.attributes.body}
             </Text>
 
             <Flex flexDirection="row" alignItems='center' gap='2' justifyContent="end">
@@ -68,7 +69,10 @@ function ListBlogs() {
           </ListItem>
           ))
         ) : (
-          <p>kosong</p>
+          <VStack>
+            <NoContent />
+            <Text fontSize="xl" fontStyle="italic" color="gray.500">No Blogs</Text>
+          </VStack>
         )}
       </List>
     </>
